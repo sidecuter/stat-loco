@@ -5,11 +5,13 @@ use crate::helpers::paginate;
 use loco_rs::prelude::*;
 use axum::debug_handler;
 use axum::extract::Query;
+use loco_rs::model::query::PaginationQuery;
 use serde::{Deserialize, Serialize};
 use crate::models::_entities::sites;
 use crate::models::_entities::{user_ids, users};
 use crate::models::sites::AddParams;
-use crate::views::sites::{PaginationResponse, Site};
+use crate::views::pagination::PaginationResponse;
+use crate::views::sites::Site;
 
 fn default_page() -> u64 { 1 }
 fn default_size() -> u64 { 50 }
@@ -35,7 +37,7 @@ pub async fn list(
     Query(q): Query<QueryWithFilter>
 ) -> Result<Response> {
     let _ = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
-    let pagination_query = query::PaginationQuery {
+    let pagination_query = PaginationQuery {
         page_size: q.size,
         page: q.page
     };
@@ -49,7 +51,7 @@ pub async fn list(
         statement.into_partial_model::<Site>(),
         &pagination_query
     ).await?;
-    format::json(PaginationResponse::response(paginated_sites, &pagination_query).await?)
+    format::json(PaginationResponse::response::<Site>(paginated_sites, &pagination_query).await?)
 }
 
 #[debug_handler]
