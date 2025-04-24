@@ -1,6 +1,5 @@
 use loco_rs::controller::views::pagination::{Pager, PagerMeta};
-use loco_rs::prelude::model::query::PageResponse;
-use loco_rs::prelude::query::PaginationQuery;
+use loco_rs::prelude::query::{PaginationQuery, PageResponse};
 use sea_orm::{DerivePartialModel};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use serde::{Deserialize, Serialize};
@@ -25,24 +24,7 @@ pub struct UserId {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct ListResponse {
-    user_id: Uuid,
-    endpoint: Option<String>,
-    created_at: DateTimeWithTimeZone
-}
-
-#[derive(Debug, Deserialize, Serialize)]
 pub struct PaginationResponse {}
-
-impl From<Site> for ListResponse {
-    fn from(value: Site) -> Self {
-        Self {
-            user_id: value.user_id.unwrap().user_id,
-            endpoint: value.endpoint,
-            created_at: value.created_at
-        }
-    }
-}
 
 impl PaginationResponse {
     #[must_use]
