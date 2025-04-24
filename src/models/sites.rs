@@ -1,14 +1,17 @@
 use loco_rs::model::ModelResult;
+use loco_rs::prelude::Validate;
 use sea_orm::entity::prelude::*;
 use sea_orm::{ActiveValue, TransactionTrait};
 use serde::{Deserialize, Serialize};
 use crate::models::{user_ids};
+use crate::validators::validate_uuid;
 pub use super::_entities::sites::{ActiveModel, Model, Entity};
 pub type Sites = Entity;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Validate)]
 pub struct AddParams {
     pub endpoint: Option<String>,
+    #[validate(custom(function = "validate_uuid"))]
     pub user_id: String,
 }
 
@@ -29,7 +32,9 @@ impl ActiveModelBehavior for ActiveModel {
 }
 
 // implement your read-oriented logic here
-impl Model {}
+impl Model {
+    
+}
 
 // implement your write-oriented logic here
 impl ActiveModel {
