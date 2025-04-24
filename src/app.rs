@@ -15,6 +15,8 @@ use std::path::Path;
 
 #[allow(unused_imports)]
 use crate::{controllers, models::_entities::users, tasks, workers::downloader::DownloadWorker};
+use crate::models::_entities::sites;
+use crate::models::user_ids;
 
 pub struct App;
 #[async_trait]
@@ -62,10 +64,16 @@ impl Hooks for App {
     }
     async fn truncate(ctx: &AppContext) -> Result<()> {
         truncate_table(&ctx.db, users::Entity).await?;
+        truncate_table(&ctx.db, user_ids::Entity).await?;
+        truncate_table(&ctx.db, sites::Entity).await?;
         Ok(())
     }
     async fn seed(ctx: &AppContext, base: &Path) -> Result<()> {
         db::seed::<users::ActiveModel>(&ctx.db, &base.join("users.yaml").display().to_string())
+            .await?;
+        db::seed::<user_ids::ActiveModel>(&ctx.db, &base.join("user_ids.yaml").display().to_string())
+            .await?;
+        db::seed::<sites::ActiveModel>(&ctx.db, &base.join("sites.yaml").display().to_string())
             .await?;
         Ok(())
     }
