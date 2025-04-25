@@ -24,6 +24,11 @@ impl ActiveModelBehavior for ActiveModel {
 
 // implement your read-oriented logic here
 impl Model {
+    /// finds uuid by the provided id
+    ///
+    /// # Errors
+    ///
+    /// When could not find `user_id` by the given id or DB query error
     pub async fn find_id_by_uuid(db: &DatabaseTransaction, user_id: &str) -> ModelResult<i32> {
         let parse_uuid = Uuid::parse_str(user_id).map_err(|e| ModelError::Any(e.into()))?;
         let user_id = UserIds::find()

@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 pub struct PaginationResponse {}
 
 impl PaginationResponse {
+    #[must_use]
     pub fn response<T: PartialModelTrait>(
         data: PageResponse<T>,
         pagination_query: &PaginationQuery,
