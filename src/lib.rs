@@ -1,11 +1,11 @@
 pub mod app;
 pub mod controllers;
 pub mod data;
+mod helpers;
 pub mod initializers;
 pub mod mailers;
 pub mod models;
 pub mod tasks;
+mod validators;
 pub mod views;
 pub mod workers;
-mod validators;
-mod helpers;

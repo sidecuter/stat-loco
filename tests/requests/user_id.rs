@@ -1,6 +1,6 @@
-use stat_api::app::App;
 use loco_rs::testing::prelude::*;
 use serial_test::serial;
+use stat_api::app::App;
 
 #[tokio::test]
 #[serial]
@@ -14,4 +14,3 @@ async fn can_get_user_ids() {
     })
     .await;
 }
-
