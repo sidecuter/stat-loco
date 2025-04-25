@@ -1,11 +1,11 @@
 #![allow(clippy::missing_errors_doc)]
 #![allow(clippy::unnecessary_struct_initialization)]
 #![allow(clippy::unused_async)]
-use loco_rs::prelude::*;
-use axum::debug_handler;
-use crate::models::_entities::user_ids::{Entity, Model, ActiveModel};
+use crate::models::_entities::user_ids::{ActiveModel, Entity, Model};
 use crate::models::_entities::users;
 use crate::views::user_id::NewResponse;
+use axum::debug_handler;
+use loco_rs::prelude::*;
 
 async fn load_item(ctx: &AppContext, id: i32) -> Result<Model> {
     let item = Entity::find_by_id(id).one(&ctx.db).await?;
@@ -22,7 +22,7 @@ pub async fn list(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Resp
 pub async fn get_one(
     auth: auth::JWT,
     Path(id): Path<i32>,
-    State(ctx): State<AppContext>
+    State(ctx): State<AppContext>,
 ) -> Result<Response> {
     let _ = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
     format::json(load_item(&ctx, id).await?)
@@ -30,8 +30,10 @@ pub async fn get_one(
 
 #[debug_handler]
 pub async fn add_one(State(ctx): State<AppContext>) -> Result<Response> {
-    let mut item: ActiveModel = Default::default();
-    item.user_id = Set(Uuid::new_v4());
+    let item = ActiveModel {
+        user_id: Set(Uuid::new_v4()),
+        ..Default::default()
+    };
     let user_id = item.insert(&ctx.db).await?;
     format::json(NewResponse::new(&user_id))
 }

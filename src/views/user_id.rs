@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use crate::models::_entities::user_ids;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct NewResponse {

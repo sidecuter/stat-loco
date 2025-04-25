@@ -1,11 +1,11 @@
+pub use super::_entities::sites::{ActiveModel, Entity, Model};
+use crate::models::user_ids;
+use crate::validators::validate_uuid;
 use loco_rs::model::ModelResult;
 use loco_rs::prelude::Validate;
 use sea_orm::entity::prelude::*;
 use sea_orm::{ActiveValue, TransactionTrait};
 use serde::{Deserialize, Serialize};
-use crate::models::{user_ids};
-use crate::validators::validate_uuid;
-pub use super::_entities::sites::{ActiveModel, Model, Entity};
 pub type Sites = Entity;
 
 #[derive(Debug, Deserialize, Serialize, Validate)]
@@ -32,31 +32,29 @@ impl ActiveModelBehavior for ActiveModel {
 }
 
 // implement your read-oriented logic here
-impl Model {
-    
-}
+impl Model {}
 
 // implement your write-oriented logic here
 impl ActiveModel {
-    pub async fn create_with_uuid(
-        db: &DatabaseConnection,
-        params: &AddParams
-    ) -> ModelResult<()> {
+    /// Creates model with specified uuid.
+    ///
+    /// # Errors
+    /// - Returns an error if database query fails
+    pub async fn create_with_uuid(db: &DatabaseConnection, params: &AddParams) -> ModelResult<()> {
         let txn = db.begin().await?;
 
-        let uid = user_ids::Model::find_id_by_uuid(&txn, &params.user_id)
-            .await?;
-        
-        let _ = ActiveModel {
+        let uid = user_ids::Model::find_id_by_uuid(&txn, &params.user_id).await?;
+
+        let _ = Self {
             user_id: ActiveValue::Set(uid),
             endpoint: ActiveValue::Set(params.endpoint.clone()),
             ..Default::default()
         }
         .insert(&txn)
         .await?;
-        
+
         txn.commit().await?;
-        
+
         Ok(())
     }
 }
