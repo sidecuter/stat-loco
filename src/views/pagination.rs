@@ -7,12 +7,11 @@ use serde::{Deserialize, Serialize};
 pub struct PaginationResponse {}
 
 impl PaginationResponse {
-    #[must_use]
-    pub async fn response<T: PartialModelTrait>(
+    pub fn response<T: PartialModelTrait>(
         data: PageResponse<T>,
         pagination_query: &PaginationQuery
-    ) -> loco_rs::Result<Pager<Vec<T>>> {
-        Ok(Pager {
+    ) -> Pager<Vec<T>> {
+        Pager {
             results: data.page,
             info: PagerMeta {
                 page: pagination_query.page,
@@ -20,6 +19,6 @@ impl PaginationResponse {
                 total_pages: data.total_pages,
                 total_items: data.total_items
             }
-        })
+        }
     }
 }

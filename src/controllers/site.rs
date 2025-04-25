@@ -13,8 +13,8 @@ use crate::models::sites::AddParams;
 use crate::views::pagination::PaginationResponse;
 use crate::views::sites::Site;
 
-fn default_page() -> u64 { 1 }
-fn default_size() -> u64 { 50 }
+const fn default_page() -> u64 { 1 }
+const fn default_size() -> u64 { 50 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct QueryWithFilter {
@@ -51,7 +51,7 @@ pub async fn list(
         statement.into_partial_model::<Site>(),
         &pagination_query
     ).await?;
-    format::json(PaginationResponse::response::<Site>(paginated_sites, &pagination_query).await?)
+    format::json(PaginationResponse::response::<Site>(paginated_sites, &pagination_query))
 }
 
 #[debug_handler]

@@ -30,8 +30,10 @@ pub async fn get_one(
 
 #[debug_handler]
 pub async fn add_one(State(ctx): State<AppContext>) -> Result<Response> {
-    let mut item: ActiveModel = Default::default();
-    item.user_id = Set(Uuid::new_v4());
+    let item = ActiveModel {
+        user_id: Set(Uuid::new_v4()),
+        ..Default::default()
+    };
     let user_id = item.insert(&ctx.db).await?;
     format::json(NewResponse::new(&user_id))
 }
