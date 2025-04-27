@@ -21,7 +21,7 @@ const fn default_size() -> u64 {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct QueryWithFilter {
-    user_id: Option<String>,
+    user_id: Option<Uuid>,
     #[serde(default = "default_size")]
     size: u64,
     #[serde(default = "default_page")]
@@ -46,11 +46,7 @@ pub async fn list(
     };
     let mut statement = sites::Entity::find().left_join(user_ids::Entity);
     statement = match q.user_id {
-        Some(uid) => statement.filter(
-            query::condition()
-                .contains(user_ids::Column::UserId, uid)
-                .build(),
-        ),
+        Some(uid) => statement.filter(query::condition().eq(user_ids::Column::UserId, uid).build()),
         None => statement,
     };
     let paginated_sites = PaginationResponse::paginate::<Site>(
