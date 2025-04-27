@@ -1,7 +1,7 @@
 #![allow(clippy::missing_errors_doc)]
 #![allow(clippy::unnecessary_struct_initialization)]
 #![allow(clippy::unused_async)]
-use crate::models::_entities::user_ids::{ActiveModel, Entity, Model};
+use crate::models::_entities::user_ids::{Entity, Model};
 use crate::models::_entities::users;
 use crate::views::user_id::NewResponse;
 use axum::debug_handler;
@@ -30,12 +30,7 @@ pub async fn get_one(
 
 #[debug_handler]
 pub async fn add_one(State(ctx): State<AppContext>) -> Result<Response> {
-    let item = ActiveModel {
-        user_id: Set(Uuid::new_v4()),
-        ..Default::default()
-    };
-    let user_id = item.insert(&ctx.db).await?;
-    format::json(NewResponse::new(&user_id))
+    format::json(NewResponse::new(&Model::create_new(&ctx.db).await?))
 }
 
 pub fn routes() -> Routes {

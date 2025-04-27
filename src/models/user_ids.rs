@@ -3,7 +3,7 @@ use crate::models::_entities::user_ids;
 use loco_rs::model;
 use loco_rs::model::{ModelError, ModelResult};
 use sea_orm::entity::prelude::*;
-use sea_orm::DatabaseTransaction;
+use sea_orm::{ActiveValue, DatabaseTransaction};
 pub type UserIds = Entity;
 
 #[async_trait::async_trait]
@@ -38,6 +38,20 @@ impl Model {
         user_id
             .ok_or(ModelError::EntityNotFound)
             .map(|user_id| user_id.id)
+    }
+
+    /// creates new `user_ids` entry in database
+    ///
+    /// # Errors
+    ///
+    /// On DB error
+    pub async fn create_new(db: &DatabaseConnection) -> ModelResult<Self> {
+        let item = ActiveModel {
+            user_id: ActiveValue::Set(Uuid::new_v4()),
+            ..Default::default()
+        };
+        let user_id = item.insert(db).await?;
+        Ok(user_id)
     }
 }
 
