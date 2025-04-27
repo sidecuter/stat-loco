@@ -23,6 +23,10 @@ impl PaginationResponse {
         }
     }
 
+    /// Paginated view on selected data.
+    ///
+    /// # Errors
+    /// - Returns an error if database query fails
     pub async fn paginate<'db, M>(
         db: &DatabaseConnection,
         entity: Selector<SelectModel<M>>,
