@@ -1,7 +1,6 @@
 #![allow(clippy::missing_errors_doc)]
 #![allow(clippy::unnecessary_struct_initialization)]
 #![allow(clippy::unused_async)]
-use crate::helpers::paginate;
 use crate::models::_entities::sites;
 use crate::models::_entities::{user_ids, users};
 use crate::models::sites::AddParams;
@@ -54,7 +53,7 @@ pub async fn list(
         ),
         None => statement,
     };
-    let paginated_sites = paginate::<Site>(
+    let paginated_sites = PaginationResponse::paginate::<Site>(
         &ctx.db,
         statement.into_partial_model::<Site>(),
         &pagination_query,
