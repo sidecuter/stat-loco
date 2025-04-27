@@ -21,7 +21,7 @@ const fn default_size() -> u64 {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct QueryWithFilter {
-    user_id: Option<String>,
+    user_id: Option<Uuid>,
     #[serde(default = "default_size")]
     size: u64,
     #[serde(default = "default_page")]
@@ -48,7 +48,7 @@ pub async fn list(
     statement = match q.user_id {
         Some(uid) => statement.filter(
             query::condition()
-                .contains(user_ids::Column::UserId, uid)
+                .eq(user_ids::Column::UserId, uid)
                 .build(),
         ),
         None => statement,
