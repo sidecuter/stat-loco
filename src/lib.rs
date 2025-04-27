@@ -1,7 +1,6 @@
 pub mod app;
 pub mod controllers;
 pub mod data;
-mod helpers;
 pub mod initializers;
 pub mod mailers;
 pub mod models;
