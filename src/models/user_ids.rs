@@ -3,7 +3,7 @@ use crate::models::_entities::user_ids;
 use loco_rs::model;
 use loco_rs::model::{ModelError, ModelResult};
 use sea_orm::entity::prelude::*;
-use sea_orm::{ActiveValue, DatabaseTransaction};
+use sea_orm::ActiveValue;
 pub type UserIds = Entity;
 
 #[async_trait::async_trait]
@@ -29,7 +29,7 @@ impl Model {
     /// # Errors
     ///
     /// When could not find `user_id` by the given id or DB query error
-    pub async fn find_id_by_uuid(db: &DatabaseTransaction, user_id: &str) -> ModelResult<i32> {
+    pub async fn find_id_by_uuid(db: &DatabaseConnection, user_id: &str) -> ModelResult<i32> {
         let parse_uuid = Uuid::parse_str(user_id).map_err(|e| ModelError::Any(e.into()))?;
         let user_id = UserIds::find()
             .filter(model::query::condition().eq(user_ids::Column::UserId, parse_uuid))

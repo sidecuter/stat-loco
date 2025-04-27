@@ -41,3 +41,24 @@ async fn can_create() {
         assert_debug_snapshot!(res);
     });
 }
+
+#[tokio::test]
+#[serial]
+async fn can_find_id_by_uuid() {
+    configure_insta!();
+
+    let boot = boot_test::<App>()
+        .await
+        .expect("Failed to boot test application");
+    seed::<App>(&boot.app_context)
+        .await
+        .expect("Failed to seed database");
+
+    let existing_user_id =
+        Model::find_id_by_uuid(&boot.app_context.db, "777ee025-8709-4dad-9cce-b018151be0f0").await;
+    let non_existing_user_id_results =
+        Model::find_id_by_uuid(&boot.app_context.db, "23232323-2323-2323-2323-232323232323").await;
+
+    assert_debug_snapshot!(existing_user_id);
+    assert_debug_snapshot!(non_existing_user_id_results);
+}

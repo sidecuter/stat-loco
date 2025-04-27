@@ -1,0 +1,7 @@
+---
+source: tests/models/user_ids.rs
+expression: non_existing_user_id_results
+---
+Err(
+    EntityNotFound,
+)

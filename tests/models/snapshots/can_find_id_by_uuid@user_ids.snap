@@ -1,0 +1,7 @@
+---
+source: tests/models/user_ids.rs
+expression: existing_user_id
+---
+Ok(
+    1,
+)
