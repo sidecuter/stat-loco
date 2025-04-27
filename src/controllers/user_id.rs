@@ -1,11 +1,29 @@
 #![allow(clippy::missing_errors_doc)]
 #![allow(clippy::unnecessary_struct_initialization)]
 #![allow(clippy::unused_async)]
-use crate::models::_entities::user_ids::{ActiveModel, Entity, Model};
+use crate::models::_entities::user_ids::{Entity, Model};
 use crate::models::_entities::users;
-use crate::views::user_id::NewResponse;
+use crate::views::user_id::{ListResponse, PaginationResponse};
 use axum::debug_handler;
+use axum::extract::Query;
 use loco_rs::prelude::*;
+use query::PaginationQuery;
+use serde::{Deserialize, Serialize};
+
+const fn default_page() -> u64 {
+    1
+}
+const fn default_size() -> u64 {
+    50
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct QueryWithFilter {
+    #[serde(default = "default_size")]
+    size: u64,
+    #[serde(default = "default_page")]
+    page: u64,
+}
 
 async fn load_item(ctx: &AppContext, id: i32) -> Result<Model> {
     let item = Entity::find_by_id(id).one(&ctx.db).await?;
@@ -13,9 +31,22 @@ async fn load_item(ctx: &AppContext, id: i32) -> Result<Model> {
 }
 
 #[debug_handler]
-pub async fn list(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
+pub async fn list(
+    auth: auth::JWT,
+    Query(q): Query<QueryWithFilter>,
+    State(ctx): State<AppContext>,
+) -> Result<Response> {
     let _ = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
-    format::json(Entity::find().all(&ctx.db).await?)
+    let pagination_query = PaginationQuery {
+        page_size: q.size,
+        page: q.page,
+    };
+    let pagination_user_ids =
+        query::paginate(&ctx.db, Entity::find(), None, &pagination_query).await?;
+    format::json(PaginationResponse::response(
+        pagination_user_ids,
+        &pagination_query,
+    ))
 }
 
 #[debug_handler]
@@ -30,12 +61,7 @@ pub async fn get_one(
 
 #[debug_handler]
 pub async fn add_one(State(ctx): State<AppContext>) -> Result<Response> {
-    let item = ActiveModel {
-        user_id: Set(Uuid::new_v4()),
-        ..Default::default()
-    };
-    let user_id = item.insert(&ctx.db).await?;
-    format::json(NewResponse::new(&user_id))
+    format::json(ListResponse::new(&Model::create_new(&ctx.db).await?))
 }
 
 pub fn routes() -> Routes {

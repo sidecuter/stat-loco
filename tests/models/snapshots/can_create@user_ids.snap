@@ -1,0 +1,12 @@
+---
+source: tests/models/user_ids.rs
+expression: res
+---
+Ok(
+    Model {
+        created_at: DATE,
+        updated_at: DATE,
+        id: ID,
+        user_id: PID,
+    },
+)

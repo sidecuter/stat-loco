@@ -1,0 +1,5 @@
+---
+source: tests/requests/user_id.rs
+expression: res.text()
+---
+"{\"user_id\":\"PID\",\"created_at\":\"DATE\"}"
